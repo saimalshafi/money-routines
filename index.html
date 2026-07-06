@@ -65,10 +65,11 @@ body{
   /* no mock status bar on a real phone */
   .statusbar{display:none!important}
   .screen{
-    padding-top:calc(16px + env(safe-area-inset-top));
+    padding-top:calc(6px + env(safe-area-inset-top));
     padding-bottom:calc(24px + env(safe-area-inset-bottom));
   }
-  #s-chat{padding-top:calc(16px + env(safe-area-inset-top))}
+  #s-chat{padding-top:calc(6px + env(safe-area-inset-top))}
+  .home-title{margin-top:4px}
   .bottom-cta{padding-bottom:calc(18px + env(safe-area-inset-bottom))}
   .chatbar-wrap{padding-bottom:calc(14px + env(safe-area-inset-bottom))}
   .sheet{padding-bottom:calc(22px + env(safe-area-inset-bottom))}
@@ -898,7 +899,7 @@ const sheetData={
  date:{title:'When it usually arrives',desc:'Used to anticipate the run — not a fixed schedule.',opts:[
   {n:'Around the 28th',d:'Detected from your deposit history',tok:'≈ the 28th'},
   {n:'Exactly on the 28th',d:'Runs on the 28th even if the salary is late',tok:'the 28th'}]},
- amt:{title:'Expected amount',desc:'An approximate amount, based on your last 6 months of deposits from ACME GmbH.',opts:[
+ amt:{title:'Expected amount',desc:'Only deposits marked as salary are counted.',opts:[
   {n:'≈ €4,120',d:'Deposits with reference note \u201CSalary\u201D',tok:'€4,120'}]},
  card:{title:'Credit card',desc:'The statement that gets paid in full.',hint:'hint-card',opts:[
   {n:'Mastercard •••• 4471',d:'Current statement €1,036.20',tok:'credit card statement',h:'Mastercard •••• 4471 · statement €1,036.20'},
