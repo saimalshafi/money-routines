@@ -1,6 +1,6 @@
 # Money Routines
 
-A concept for agent-driven personal banking. Describe what should happen with your money once, in plain language. An agent reads your account, builds the routine, and shows every assumption it made before anything runs.
+A concept for an agent-driven banking use-case. Describe what should happen with your money once, in plain language. An agent reads your account, builds the routine, and shows every assumption it made before anything runs.
 
 **Live prototype:** https://saimalshafi.github.io/money-routines/
 
