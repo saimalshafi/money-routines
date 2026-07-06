@@ -6,6 +6,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="format-detection" content="telephone=no">
 <meta name="theme-color" content="#FFFFFF">
 <title>Routines — Concept Prototype</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -65,10 +66,10 @@ body{
   /* no mock status bar on a real phone */
   .statusbar{display:none!important}
   .screen{
-    padding-top:calc(6px + env(safe-area-inset-top));
-    padding-bottom:calc(24px + env(safe-area-inset-bottom));
+    padding-top:calc(6px + env(safe-area-inset-top))!important;
+    padding-bottom:calc(24px + env(safe-area-inset-bottom))!important;
   }
-  #s-chat{padding-top:calc(6px + env(safe-area-inset-top))}
+  #s-chat{padding-top:calc(6px + env(safe-area-inset-top))!important}
   .home-title{margin-top:4px}
   .bottom-cta{padding-bottom:calc(18px + env(safe-area-inset-bottom))}
   .chatbar-wrap{padding-bottom:calc(14px + env(safe-area-inset-bottom))}
