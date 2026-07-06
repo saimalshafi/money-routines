@@ -894,12 +894,13 @@ function showSetup(){
 
 /* ---------- selection sheet ---------- */
 const sheetData={
- source:{title:'Salary source',desc:'Deposits from your employer with a salary reference note.',opts:[
-  {n:'ACME GmbH deposits',d:'Reference note contains \u201CSalary\u201D · 6 matches found',tok:'salary from ACME GmbH'}]},
+ source:{title:'Salary source',desc:'Income sources detected on your account. Deposits from the selected one count as salary.',opts:[
+  {n:'ACME GmbH',d:'Reference note \u201CSalary\u201D · ≈ €4,120 monthly',tok:'salary from ACME GmbH'},
+  {n:'Nordwind Studio',d:'Freelance income · irregular amounts',tok:'income from Nordwind Studio'}]},
  date:{title:'When it usually arrives',desc:'Used to anticipate the run — not a fixed schedule.',opts:[
   {n:'Around the 28th',d:'Detected from your deposit history',tok:'≈ the 28th'},
   {n:'Exactly on the 28th',d:'Runs on the 28th even if the salary is late',tok:'the 28th'}]},
- amt:{title:'Expected amount',desc:'Only deposits marked as salary are counted.',opts:[
+ amt:{title:'Expected amount',desc:'An approximate amount, based on your last 6 months of deposits from ACME GmbH.',opts:[
   {n:'≈ €4,120',d:'Deposits with reference note \u201CSalary\u201D',tok:'€4,120'}]},
  card:{title:'Credit card',desc:'The statement that gets paid in full.',hint:'hint-card',opts:[
   {n:'Mastercard •••• 4471',d:'Current statement €1,036.20',tok:'credit card statement',h:'Mastercard •••• 4471 · statement €1,036.20'},
