@@ -45,7 +45,7 @@ body{
   box-shadow:0 0 0 10px #232323, 0 0 0 12px #2e2e2e, 0 40px 80px rgba(0,0,0,.5);
 }
 .hint{color:#5c5c5c;font-size:12px;letter-spacing:.02em}
-@media (max-width:430px){
+@media (max-width:500px){
   html,body{
     position:fixed;inset:0;width:100%;height:100%;
     overflow:hidden;
@@ -63,7 +63,7 @@ body{
   }
   .hint{display:none}
   /* no mock status bar on a real phone */
-  .statusbar{display:none}
+  .statusbar{display:none!important}
   .screen{
     padding-top:calc(16px + env(safe-area-inset-top));
     padding-bottom:calc(24px + env(safe-area-inset-bottom));
@@ -893,15 +893,13 @@ function showSetup(){
 
 /* ---------- selection sheet ---------- */
 const sheetData={
- source:{title:'Salary source',desc:'What counts as your salary arriving.',opts:[
-  {n:'ACME GmbH deposits',d:'6 matching deposits · ≈ €4,120 around the 28th',tok:'salary from ACME GmbH'},
-  {n:'Any deposit over €3,000',d:'Broader match — also catches a new employer',tok:'any deposit over €3,000'}]},
+ source:{title:'Salary source',desc:'Deposits from your employer with a salary reference note.',opts:[
+  {n:'ACME GmbH deposits',d:'Reference note contains \u201CSalary\u201D · 6 matches found',tok:'salary from ACME GmbH'}]},
  date:{title:'When it usually arrives',desc:'Used to anticipate the run — not a fixed schedule.',opts:[
   {n:'Around the 28th',d:'Detected from your deposit history',tok:'≈ the 28th'},
   {n:'Exactly on the 28th',d:'Runs on the 28th even if the salary is late',tok:'the 28th'}]},
- amt:{title:'Expected amount',desc:'Deposits near this amount count as salary.',opts:[
-  {n:'≈ €4,120',d:'Anything above €3,800 counts — bonus months included',tok:'€4,120'},
-  {n:'Exact amount only',d:'Only deposits of exactly €4,120',tok:'exactly €4,120'}]},
+ amt:{title:'Expected amount',desc:'An approximate amount, based on your last 6 months of deposits from ACME GmbH.',opts:[
+  {n:'≈ €4,120',d:'Deposits with reference note \u201CSalary\u201D',tok:'€4,120'}]},
  card:{title:'Credit card',desc:'The statement that gets paid in full.',hint:'hint-card',opts:[
   {n:'Mastercard •••• 4471',d:'Current statement €1,036.20',tok:'credit card statement',h:'Mastercard •••• 4471 · statement €1,036.20'},
   {n:'Visa •••• 2210',d:'Current statement €89.10',tok:'Visa statement',h:'Visa •••• 2210 · statement €89.10'}]},
@@ -936,7 +934,7 @@ function openSheet(key){
   const data=sheetData[key];
   document.getElementById('shTitle').textContent=data.title;
   document.getElementById('shDesc').textContent=data.desc;
-  document.getElementById('shChange').style.display='block';
+  document.getElementById('shChange').style.display=data.opts.length>1?'block':'none';
   renderRows();
   document.getElementById('scrim').classList.add('show');
   document.getElementById('sheet').classList.add('show');
@@ -947,6 +945,7 @@ function expandOpts(){
   renderRows();
 }
 function rowTap(i){
+  if(sheetData[sheetKey].opts.length<2)return;
   if(!sheetExpanded){expandOpts();return;}
   selIdx[sheetKey]=i;
   const data=sheetData[sheetKey];
