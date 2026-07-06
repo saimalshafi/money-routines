@@ -2,7 +2,11 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#FFFFFF">
 <title>Routines — Concept Prototype</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -42,10 +46,28 @@ body{
 }
 .hint{color:#5c5c5c;font-size:12px;letter-spacing:.02em}
 @media (max-width:430px){
+  html,body{
+    position:fixed;inset:0;width:100%;height:100%;
+    overflow:hidden;
+    overscroll-behavior:none;
+    -webkit-overflow-scrolling:auto;
+    touch-action:none;
+  }
+  .screen,.tabpane,.chat-scroll{touch-action:pan-y;-webkit-overflow-scrolling:touch}
   body{background:var(--paper)}
-  .stage{padding:0;gap:0}
-  .phone{width:100vw;height:100dvh;border-radius:0;box-shadow:none}
+  .stage{padding:0;gap:0;height:100%}
+  .phone{width:100vw;height:100%;border-radius:0;box-shadow:none}
   .hint{display:none}
+  .bottom-cta{padding-bottom:calc(18px + env(safe-area-inset-bottom))}
+  .chatbar-wrap{padding-bottom:calc(14px + env(safe-area-inset-bottom))}
+  .sheet{padding-bottom:calc(22px + env(safe-area-inset-bottom))}
+  .screen{padding-bottom:calc(24px + env(safe-area-inset-bottom))}
+}
+/* installed to home screen: real status bar replaces the mock */
+@media (display-mode:standalone){
+  .statusbar{display:none}
+  .screen{padding-top:calc(16px + env(safe-area-inset-top))}
+  #s-chat{padding-top:calc(16px + env(safe-area-inset-top))}
 }
 
 /* ---------- status bar ---------- */
