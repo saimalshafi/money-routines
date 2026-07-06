@@ -1,0 +1,1012 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Routines — Concept Prototype</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,450;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#0A0A0A;
+  --paper:#FFFFFF;
+  --card:#F5F5F4;
+  --line:#EBEBEA;
+  --mid:#8A8A87;
+  --faint:#B9B9B6;
+  --press:#1C1C1B;
+  --r-lg:24px;
+  --r-md:16px;
+  --r-pill:100px;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{
+  font-family:'Inter',-apple-system,sans-serif;
+  background:#141414;
+  display:flex;align-items:center;justify-content:center;
+  min-height:100vh;
+  font-feature-settings:'cv11','ss01';
+}
+
+/* ---------- phone frame ---------- */
+.stage{display:flex;flex-direction:column;align-items:center;gap:16px;padding:24px 0}
+.phone{
+  width:390px;height:820px;
+  background:var(--paper);
+  border-radius:48px;
+  overflow:hidden;
+  position:relative;
+  box-shadow:0 0 0 10px #232323, 0 0 0 12px #2e2e2e, 0 40px 80px rgba(0,0,0,.5);
+}
+.hint{color:#5c5c5c;font-size:12px;letter-spacing:.02em}
+@media (max-width:430px){
+  body{background:var(--paper)}
+  .stage{padding:0;gap:0}
+  .phone{width:100vw;height:100dvh;border-radius:0;box-shadow:none}
+  .hint{display:none}
+}
+
+/* ---------- status bar ---------- */
+.statusbar{
+  position:absolute;top:0;left:0;right:0;height:52px;z-index:50;
+  display:flex;align-items:flex-end;justify-content:space-between;
+  padding:0 30px 6px;
+  font-size:14px;font-weight:600;color:var(--ink);
+  pointer-events:none;
+}
+.statusbar .icons{display:flex;gap:5px;align-items:center}
+.statusbar svg{display:block}
+
+/* ---------- screens ---------- */
+.screen{
+  position:absolute;inset:0;
+  background:var(--paper);
+  padding:64px 24px 32px;
+  display:flex;flex-direction:column;
+  transform:translateX(100%);
+  transition:transform .38s cubic-bezier(.32,.72,.28,1), opacity .38s;
+  overflow-y:auto;overflow-x:hidden;
+  scrollbar-width:none;
+}
+.screen::-webkit-scrollbar{display:none}
+.screen.active{transform:translateX(0)}
+.screen.left{transform:translateX(-24%);opacity:.6}
+@media (prefers-reduced-motion:reduce){
+  .screen{transition:none}
+}
+
+/* ---------- shared ---------- */
+.topbar{display:flex;align-items:center;justify-content:space-between;min-height:40px;margin-bottom:8px}
+.iconbtn{
+  width:40px;height:40px;border-radius:50%;
+  background:var(--card);border:none;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  transition:background .15s;
+  flex-shrink:0;
+}
+.iconbtn:active{background:var(--line)}
+.iconbtn svg{display:block}
+.eyebrow{
+  font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--mid);margin-bottom:8px;
+}
+h1{font-size:30px;font-weight:700;letter-spacing:-.03em;line-height:1.12;color:var(--ink)}
+.sub{font-size:14px;color:var(--mid);line-height:1.5;margin-top:8px;font-weight:450}
+
+.btn{
+  width:100%;padding:17px;border:none;border-radius:var(--r-pill);
+  background:var(--ink);color:#fff;
+  font-family:inherit;font-size:16px;font-weight:600;letter-spacing:-.01em;
+  cursor:pointer;transition:transform .12s, background .12s;
+}
+.btn:active{transform:scale(.98);background:var(--press)}
+.btn.ghost{background:transparent;color:var(--ink);border:1.5px solid var(--line)}
+.btn.ghost:active{background:var(--card)}
+button:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+
+/* ==================================================
+   SCREEN 1 — routines home (tabs)
+================================================== */
+#s-home{padding-bottom:0}
+.home-title{font-size:30px;font-weight:700;letter-spacing:-.03em;margin:8px 0 18px}
+.tabs{
+  display:flex;background:var(--card);border-radius:var(--r-pill);padding:4px;gap:2px;
+  margin-bottom:18px;flex-shrink:0;
+}
+.tabs button{
+  flex:1;padding:10px 4px;border:none;border-radius:var(--r-pill);
+  background:none;font-family:inherit;font-size:13px;font-weight:600;
+  color:var(--mid);cursor:pointer;transition:all .15s;letter-spacing:-.01em;
+  position:relative;
+}
+.tabs button.sel{background:var(--ink);color:#fff}
+.tabs button .badge{
+  position:absolute;top:6px;right:10px;width:7px;height:7px;border-radius:50%;
+  background:var(--ink);
+}
+.tabs button.sel .badge{background:#fff}
+
+.tabpane{display:none;flex:1;overflow-y:auto;scrollbar-width:none;padding-bottom:110px}
+.tabpane::-webkit-scrollbar{display:none}
+.tabpane.sel{display:block}
+
+.empty{padding:52px 20px;text-align:center}
+.empty-ic{
+  width:56px;height:56px;border-radius:20px;background:var(--card);
+  display:flex;align-items:center;justify-content:center;margin:0 auto 16px;
+}
+.empty h3{font-size:16px;font-weight:650;letter-spacing:-.015em;margin-bottom:6px}
+.empty p{font-size:13.5px;color:var(--mid);line-height:1.55;font-weight:450;max-width:250px;margin:0 auto}
+
+.routine-card{
+  background:var(--card);border-radius:var(--r-lg);
+  padding:18px;margin-bottom:10px;
+  display:flex;gap:14px;align-items:flex-start;
+  cursor:pointer;transition:transform .12s;
+}
+.routine-card:active{transform:scale(.985)}
+.r-icon{
+  width:42px;height:42px;border-radius:14px;background:var(--ink);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.r-body{flex:1;min-width:0}
+.r-name{font-size:15px;font-weight:600;letter-spacing:-.01em;line-height:1.3}
+.r-meta{font-size:12.5px;color:var(--mid);margin-top:3px;line-height:1.45;font-weight:450}
+.r-meta strong{color:var(--ink);font-weight:600}
+.toggle{
+  width:46px;height:28px;border-radius:100px;background:var(--line);
+  position:relative;cursor:pointer;flex-shrink:0;border:none;
+  transition:background .2s;align-self:center;
+}
+.toggle::after{
+  content:'';position:absolute;top:3px;left:3px;
+  width:22px;height:22px;border-radius:50%;background:#fff;
+  box-shadow:0 1px 3px rgba(0,0,0,.2);
+  transition:transform .2s cubic-bezier(.32,.72,.28,1);
+}
+.toggle.on{background:var(--ink)}
+.toggle.on::after{transform:translateX(18px)}
+
+.audit-day{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--mid);margin:6px 0 4px}
+.audit-day:not(:first-child){margin-top:20px}
+.audit-row{
+  display:flex;gap:13px;padding:14px 0;border-bottom:1px solid var(--line);
+  align-items:flex-start;background:none;border-left:none;border-right:none;border-top:none;
+  width:100%;font-family:inherit;text-align:left;cursor:default;
+}
+button.audit-row{cursor:pointer;border-bottom:1px solid var(--line)}
+button.audit-row:active{background:var(--card)}
+.a-icon{
+  width:38px;height:38px;border-radius:13px;background:var(--card);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.a-icon.filled{background:var(--ink)}
+.a-icon.hollow{background:var(--paper);box-shadow:inset 0 0 0 1.5px var(--ink)}
+.a-body{flex:1}
+.a-title{font-size:14px;font-weight:600;letter-spacing:-.01em;color:var(--ink)}
+.a-sub{font-size:12.5px;color:var(--mid);margin-top:2px;line-height:1.5;font-weight:450}
+.a-amt{font-size:14px;font-weight:650;font-variant-numeric:tabular-nums;white-space:nowrap;letter-spacing:-.01em;color:var(--ink)}
+.a-amt.pos::before{content:'+'}
+.review-tag{
+  display:inline-flex;align-items:center;gap:6px;margin-top:7px;
+  font-size:11.5px;font-weight:650;color:var(--ink);
+}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--ink);animation:pulse 1.6s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.25}}
+@media (prefers-reduced-motion:reduce){.dot{animation:none}}
+
+.bottom-cta{
+  position:absolute;left:0;right:0;bottom:0;z-index:30;
+  padding:14px 24px 30px;
+  background:linear-gradient(to top, var(--paper) 65%, rgba(255,255,255,0));
+}
+
+/* ==================================================
+   SCREEN 2 — agent chat
+================================================== */
+#s-chat{padding:64px 0 0}
+.chat-top{padding:0 24px;flex-shrink:0}
+.chat-scroll{
+  flex:1;overflow-y:auto;scrollbar-width:none;
+  padding:18px 24px 16px;display:flex;flex-direction:column;gap:10px;
+  scroll-behavior:smooth;
+}
+.chat-scroll::-webkit-scrollbar{display:none}
+@media (prefers-reduced-motion:reduce){.chat-scroll{scroll-behavior:auto}}
+
+/* Claude-style empty state — pinned to top */
+.chat-hero{
+  flex:0 0 auto;padding:10px 0 6px;
+}
+.chat-hero h1{font-size:28px}
+.chat-hero .sub{max-width:none}
+
+/* agent thinking indicator (ephemeral) */
+.thinking{
+  align-self:flex-start;
+  font-size:13px;font-weight:550;letter-spacing:-.005em;
+  padding:6px 2px;
+  color:var(--mid);
+  background:linear-gradient(90deg, var(--mid) 30%, var(--ink) 50%, var(--mid) 70%);
+  background-size:200% 100%;
+  -webkit-background-clip:text;background-clip:text;
+  -webkit-text-fill-color:transparent;
+  animation:shimmer 1.4s linear infinite;
+}
+@keyframes shimmer{from{background-position:150% 0}to{background-position:-50% 0}}
+@media (prefers-reduced-motion:reduce){
+  .thinking{animation:none;background:none;-webkit-text-fill-color:var(--mid)}
+}
+
+/* routine timeline bubble */
+.setup-bubble{
+  background:var(--card);
+  border-radius:20px 20px 20px 6px;
+  padding:20px 18px 18px;
+}
+.tl{position:relative}
+.tl-row{display:flex;gap:14px;position:relative;padding-bottom:20px}
+.tl-row:last-child{padding-bottom:0}
+.tl-row:not(:last-child)::before{
+  content:'';position:absolute;left:11px;top:26px;bottom:-2px;
+  width:1.5px;background:#DBDBD9;
+}
+.tl-marker{
+  width:24px;height:24px;border-radius:50%;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  background:var(--ink);color:#fff;
+  font-size:10.5px;font-weight:700;
+  position:relative;z-index:1;
+}
+.tl-marker.trig{
+  background:var(--card);box-shadow:inset 0 0 0 1.5px var(--ink);
+}
+.tl-marker.trig::after{
+  content:'';width:8px;height:8px;border-radius:50%;background:var(--ink);
+}
+.tl-content{flex:1;min-width:0;padding-top:2px}
+.tl-content .parse-tag{margin-bottom:5px}
+
+.bubble{
+  max-width:82%;padding:13px 16px;border-radius:20px;
+  font-size:14.5px;line-height:1.5;font-weight:450;letter-spacing:-.005em;
+}
+.bubble.ai{background:var(--card);color:var(--ink);align-self:flex-start;border-bottom-left-radius:6px}
+.bubble.user{background:var(--ink);color:#fff;align-self:flex-end;border-bottom-right-radius:6px;font-weight:500}
+.bubble .tdots{display:inline-flex;gap:4px;padding:3px 2px}
+.bubble .tdots span{width:6px;height:6px;border-radius:50%;background:var(--faint);animation:tblink 1.2s infinite}
+.bubble .tdots span:nth-child(2){animation-delay:.15s}
+.bubble .tdots span:nth-child(3){animation-delay:.3s}
+@keyframes tblink{0%,60%,100%{opacity:.3}30%{opacity:1}}
+@media (prefers-reduced-motion:reduce){.bubble .tdots span{animation:none;opacity:.6}}
+.chat-label{
+  font-size:11px;font-weight:600;color:var(--faint);letter-spacing:.06em;
+  align-self:flex-start;margin:2px 4px -4px;
+}
+.chat-label.right{align-self:flex-end}
+
+/* in-chat setup block */
+.setup{
+  width:100%;display:flex;flex-direction:column;gap:10px;
+  animation:rise .4s cubic-bezier(.32,.72,.28,1);
+}
+@keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.setup{animation:none}}
+
+.parse-card{
+  background:var(--card);border-radius:var(--r-lg);
+  padding:18px;
+}
+.parse-tag{
+  font-size:10.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--mid);margin-bottom:9px;display:flex;align-items:center;gap:7px;
+}
+.step-num{
+  width:18px;height:18px;border-radius:50%;background:var(--ink);color:#fff;
+  font-size:10px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;
+  letter-spacing:0;
+}
+.parse-text{font-size:15px;line-height:1.55;font-weight:500;color:var(--ink);letter-spacing:-.01em}
+.tok{
+  border-bottom:1.5px dashed var(--faint);
+  cursor:pointer;font-weight:650;white-space:nowrap;
+  transition:border-color .15s;
+}
+.tok:active{border-color:var(--ink)}
+.parse-note{font-size:12px;color:var(--mid);margin-top:9px;line-height:1.5;font-weight:450}
+.parse-hint{
+  font-size:11.5px;color:var(--mid);margin-top:5px;font-weight:500;
+  font-variant-numeric:tabular-nums;letter-spacing:.01em;
+}
+
+/* bottom sheet */
+.scrim{
+  position:absolute;inset:0;background:rgba(10,10,10,.45);
+  opacity:0;pointer-events:none;transition:opacity .25s;z-index:70;
+}
+.scrim.show{opacity:1;pointer-events:auto}
+.sheet{
+  position:absolute;left:0;right:0;bottom:0;z-index:71;
+  background:var(--paper);border-radius:28px 28px 0 0;
+  padding:12px 24px 34px;
+  transform:translateY(105%);
+  transition:transform .32s cubic-bezier(.32,.72,.28,1);
+  box-shadow:0 -8px 40px rgba(0,0,0,.18);
+}
+.sheet.show{transform:none}
+@media (prefers-reduced-motion:reduce){.sheet{transition:none}.scrim{transition:none}}
+.sheet-handle{width:36px;height:4px;border-radius:2px;background:var(--line);margin:0 auto 18px}
+.sheet-title{font-size:18px;font-weight:700;letter-spacing:-.02em}
+.sheet-desc{font-size:13px;color:var(--mid);margin-top:3px;line-height:1.5;font-weight:450;margin-bottom:10px}
+.opt-row{
+  display:flex;align-items:center;gap:12px;width:100%;
+  background:none;border:none;font-family:inherit;text-align:left;
+  padding:13px 4px;cursor:pointer;border-radius:12px;
+}
+.opt-row:active{background:var(--card)}
+.opt-name{font-size:14.5px;font-weight:600;letter-spacing:-.01em}
+.opt-detail{font-size:12px;color:var(--mid);margin-top:1px;font-variant-numeric:tabular-nums}
+.opt-row .radio{margin-left:auto}
+.sheet .btn{margin-top:12px}
+
+.ambig{
+  border-radius:var(--r-lg);padding:18px;
+  background:var(--paper);box-shadow:inset 0 0 0 1.5px var(--ink);
+}
+.ambig .parse-tag{color:var(--ink)}
+.person-row{
+  display:flex;align-items:center;gap:12px;width:100%;
+  background:none;border:none;font-family:inherit;text-align:left;
+  padding:11px 4px;cursor:pointer;border-radius:12px;
+}
+.person-row:active{background:var(--card)}
+.avatar{
+  width:38px;height:38px;border-radius:50%;background:var(--ink);color:#fff;
+  font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.avatar.alt{background:var(--line);color:var(--ink)}
+.p-name{font-size:14.5px;font-weight:600}
+.p-detail{font-size:12px;color:var(--mid);margin-top:1px}
+.radio{
+  margin-left:auto;width:22px;height:22px;border-radius:50%;
+  border:1.5px solid var(--faint);flex-shrink:0;transition:border-color .15s;
+}
+.person-row.sel .radio{border-color:var(--ink);border-width:7px}
+
+.autonomy{margin:8px 0 2px}
+.ex-label{font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--mid);margin-bottom:10px}
+.seg{display:flex;background:var(--card);border-radius:var(--r-pill);padding:4px;gap:2px}
+.seg button{
+  flex:1;padding:11px 4px;border:none;border-radius:var(--r-pill);
+  background:none;font-family:inherit;font-size:12.5px;font-weight:600;
+  color:var(--mid);cursor:pointer;transition:all .15s;letter-spacing:-.01em;
+}
+.seg button.sel{background:var(--ink);color:#fff}
+.seg-hint{font-size:12px;color:var(--mid);margin-top:9px;line-height:1.5;text-align:left;font-weight:450;min-height:34px}
+.setup-actions{display:flex;flex-direction:column;gap:8px;margin-top:4px}
+
+/* chat bar */
+.chatbar-wrap{
+  flex-shrink:0;padding:10px 16px 26px;
+  border-top:1px solid var(--line);background:var(--paper);
+  display:flex;gap:8px;align-items:flex-end;
+}
+.chatbar{
+  flex:1;min-height:48px;max-height:120px;
+  background:var(--card);border-radius:24px;
+  padding:14px 18px;
+  font-size:14.5px;font-weight:500;line-height:1.4;color:var(--ink);
+  cursor:text;letter-spacing:-.005em;
+}
+.chatbar .ph{color:var(--faint);font-weight:450}
+.caret{
+  display:inline-block;width:2px;height:1.05em;background:var(--ink);
+  vertical-align:-0.18em;animation:blink 1s step-end infinite;margin-left:1px;
+}
+@keyframes blink{50%{opacity:0}}
+.sendbtn{
+  width:48px;height:48px;border-radius:50%;border:none;flex-shrink:0;
+  background:var(--line);cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  transition:background .2s, transform .12s;
+}
+.sendbtn.ready{background:var(--ink)}
+.sendbtn.ready:active{transform:scale(.92)}
+.sendbtn svg path{stroke:var(--faint);transition:stroke .2s}
+.sendbtn.ready svg path{stroke:#fff}
+
+/* ==================================================
+   SCREEN 3 — exception review
+================================================== */
+.exc-amount{margin:22px 0 6px}
+.exc-amount .val{font-size:44px;font-weight:700;letter-spacing:-.035em;font-variant-numeric:tabular-nums}
+.exc-amount .vs{font-size:13.5px;color:var(--mid);margin-top:6px;font-weight:450;line-height:1.5}
+.exc-amount .vs strong{color:var(--ink);font-weight:650}
+.delta-pill{
+  display:inline-flex;align-items:center;gap:5px;
+  background:var(--ink);color:#fff;border-radius:100px;
+  padding:5px 11px;font-size:12px;font-weight:700;margin-top:12px;
+  font-variant-numeric:tabular-nums;
+}
+.chart{background:var(--card);border-radius:var(--r-lg);padding:20px 18px 14px;margin:20px 0 10px}
+.chart-title{font-size:12px;font-weight:600;color:var(--mid);margin-bottom:16px}
+.bars{display:flex;align-items:flex-end;gap:10px;height:110px}
+.bar-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:7px;height:100%;justify-content:flex-end}
+.bar{width:100%;background:#DBDBD9;border-radius:7px 7px 3px 3px}
+.bar.hot{background:var(--ink)}
+.bar-val{font-size:10px;font-weight:600;color:var(--mid);font-variant-numeric:tabular-nums}
+.bar-col .m{font-size:10.5px;color:var(--faint);font-weight:500}
+.bar-col:last-child .m,.bar-col:last-child .bar-val{color:var(--ink);font-weight:700}
+.avg-note{font-size:11.5px;color:var(--mid);margin-top:12px;font-weight:450}
+.exc-why{
+  font-size:13.5px;line-height:1.55;color:var(--ink);font-weight:450;
+  padding:16px 18px;background:var(--card);border-radius:var(--r-md);margin-bottom:10px;
+}
+.exc-actions{margin-top:auto;padding-top:14px;display:flex;flex-direction:column;gap:8px}
+.always-ask{
+  background:none;border:none;font-family:inherit;
+  font-size:13px;font-weight:600;color:var(--mid);cursor:pointer;
+  padding:10px;text-decoration:underline;text-underline-offset:3px;
+}
+
+/* toast */
+.toast{
+  position:absolute;left:20px;right:20px;bottom:28px;z-index:60;
+  background:var(--ink);color:#fff;border-radius:var(--r-md);
+  padding:15px 18px;font-size:13.5px;font-weight:550;line-height:1.4;
+  transform:translateY(120px);opacity:0;transition:all .35s cubic-bezier(.32,.72,.28,1);
+  box-shadow:0 12px 32px rgba(0,0,0,.25);
+  display:flex;align-items:center;gap:10px;
+}
+.toast.show{transform:translateY(0);opacity:1}
+.toast svg{flex-shrink:0}
+</style>
+</head>
+<body>
+<div class="stage">
+<div class="phone" id="phone">
+
+  <!-- status bar -->
+  <div class="statusbar">
+    <span>9:41</span>
+    <span class="icons">
+      <svg width="17" height="11" viewBox="0 0 17 11" fill="none"><rect x="0" y="6" width="3" height="5" rx="1" fill="#0A0A0A"/><rect x="4.5" y="4" width="3" height="7" rx="1" fill="#0A0A0A"/><rect x="9" y="2" width="3" height="9" rx="1" fill="#0A0A0A"/><rect x="13.5" y="0" width="3" height="11" rx="1" fill="#0A0A0A"/></svg>
+      <svg width="25" height="12" viewBox="0 0 25 12" fill="none"><rect x="0.5" y="0.5" width="21" height="11" rx="3" stroke="#0A0A0A" opacity=".4"/><rect x="2" y="2" width="15" height="8" rx="1.5" fill="#0A0A0A"/><path d="M23.5 4v4c1-.3 1.5-1 1.5-2s-.5-1.7-1.5-2z" fill="#0A0A0A" opacity=".4"/></svg>
+    </span>
+  </div>
+
+  <!-- ============ SCREEN 1 : HOME ============ -->
+  <section class="screen active" id="s-home">
+    <div class="home-title">Routines</div>
+
+    <div class="tabs" role="tablist">
+      <button class="sel" id="tab-active" onclick="setTab('active')">Active</button>
+      <button id="tab-paused" onclick="setTab('paused')">Paused</button>
+      <button id="tab-history" onclick="setTab('history')">History<span class="badge" id="histBadge"></span></button>
+    </div>
+
+    <!-- ACTIVE -->
+    <div class="tabpane sel" id="pane-active">
+      <div class="empty" id="activeEmpty">
+        <div class="empty-ic">
+          <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M11 2.5a8.5 8.5 0 1 1-8.4 9.9" stroke="#0A0A0A" stroke-width="1.6" stroke-linecap="round"/><path d="M11 6.5V11l3 2" stroke="#0A0A0A" stroke-width="1.6" stroke-linecap="round"/><path d="M2.5 8.5L4 11l2.5-1.5" stroke="#0A0A0A" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <h3>No routines yet</h3>
+        <p>Describe what should happen with your money, once. Your agent sets it up and runs it.</p>
+      </div>
+
+      <div class="routine-card" id="salaryCard" style="display:none" onclick="toast('Routine detail view — out of scope for this concept pass.')">
+        <div class="r-icon">
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M2 9h11M9 4.5L13.5 9L9 13.5" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><path d="M16 3v12" stroke="#fff" stroke-width="1.7" stroke-linecap="round"/></svg>
+        </div>
+        <div class="r-body">
+          <div class="r-name">Salary day</div>
+          <div class="r-meta">3 steps when salary arrives · <strong>Asks before running</strong> · Next: ≈ Jul 28</div>
+        </div>
+        <button class="toggle on" onclick="event.stopPropagation();moveToPaused()" aria-label="Pause routine"></button>
+      </div>
+    </div>
+
+    <!-- PAUSED -->
+    <div class="tabpane" id="pane-paused">
+      <div class="empty" id="pausedEmpty">
+        <div class="empty-ic">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M7 4.5v11M13 4.5v11" stroke="#0A0A0A" stroke-width="1.8" stroke-linecap="round"/></svg>
+        </div>
+        <h3>Nothing paused</h3>
+        <p>Paused routines keep their setup and history. Switch them back on anytime.</p>
+      </div>
+
+      <div class="routine-card" id="salaryCardPaused" style="display:none">
+        <div class="r-icon" style="background:var(--line)">
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M2 9h11M9 4.5L13.5 9L9 13.5" stroke="#0A0A0A" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><path d="M16 3v12" stroke="#0A0A0A" stroke-width="1.7" stroke-linecap="round"/></svg>
+        </div>
+        <div class="r-body">
+          <div class="r-name">Salary day</div>
+          <div class="r-meta">Paused · setup and history kept</div>
+        </div>
+        <button class="toggle" onclick="event.stopPropagation();moveToActive()" aria-label="Resume routine"></button>
+      </div>
+    </div>
+
+    <!-- HISTORY -->
+    <div class="tabpane" id="pane-history">
+      <div class="audit-day">Today</div>
+
+      <div class="audit-row" id="auditPaid" style="display:none">
+        <div class="a-icon filled"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8.5l3.2 3L13 5" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="a-body">
+          <div class="a-title">Stadtwerke Energie paid</div>
+          <div class="a-sub">Utilities autopay · you approved after review · 37% above average</div>
+        </div>
+        <div class="a-amt">−€118.40</div>
+      </div>
+
+      <button class="audit-row" id="auditHeld" onclick="go('s-exception')">
+        <div class="a-icon hollow"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 3v6M8 11.5v1.5" stroke="#0A0A0A" stroke-width="1.8" stroke-linecap="round"/></svg></div>
+        <div class="a-body">
+          <div class="a-title">Bill held — €118.40</div>
+          <div class="a-sub">Utilities autopay · Stadtwerke is 37% above your 6-month average</div>
+          <div class="review-tag"><span class="dot"></span> Waiting for your decision</div>
+        </div>
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style="align-self:center;flex-shrink:0"><path d="M6 3l5 5-5 5" stroke="#B9B9B6" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+
+      <div class="audit-day">June 28</div>
+      <div class="audit-row">
+        <div class="a-icon filled"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 8h9M7.5 4L11.5 8l-4 4" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><path d="M14 3.5v9" stroke="#fff" stroke-width="1.7" stroke-linecap="round"/></svg></div>
+        <div class="a-body">
+          <div class="a-title">Moved to Emergency fund</div>
+          <div class="a-sub">Pre-salary sweep · balance was €912, kept your €500 buffer</div>
+        </div>
+        <div class="a-amt">−€412.00</div>
+      </div>
+      <div class="audit-row">
+        <div class="a-icon"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 13V3M4.8 6.2L8 3l3.2 3.2" stroke="#0A0A0A" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="a-body">
+          <div class="a-title">Salary detected</div>
+          <div class="a-sub">ACME GmbH · matched your salary pattern</div>
+        </div>
+        <div class="a-amt pos">€4,120.00</div>
+      </div>
+
+      <div class="audit-day">June 15</div>
+      <div class="audit-row">
+        <div class="a-icon filled"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8.5l3.2 3L13 5" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="a-body">
+          <div class="a-title">Vodafone paid</div>
+          <div class="a-sub">Utilities autopay · within usual range, ran automatically</div>
+        </div>
+        <div class="a-amt">−€39.99</div>
+      </div>
+    </div>
+
+    <div class="bottom-cta">
+      <button class="btn" onclick="openChat()">New routine</button>
+    </div>
+  </section>
+
+  <!-- ============ SCREEN 2 : AGENT CHAT ============ -->
+  <section class="screen" id="s-chat">
+    <div class="chat-top">
+      <div class="topbar">
+        <button class="iconbtn" onclick="back('s-home')" aria-label="Back">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M10 3L5 8l5 5" stroke="#0A0A0A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <div class="eyebrow" style="margin:0">New routine</div>
+        <div style="width:40px"></div>
+      </div>
+    </div>
+
+    <div class="chat-scroll" id="chatScroll">
+      <div class="chat-hero" id="chatHero">
+        <h1>What would you like me to do?</h1>
+        <p class="sub">Tell me what should happen and when. I'll look through your accounts to set everything up, and if anything isn't clear, I'll ask before doing anything.</p>
+      </div>
+    </div>
+
+    <div class="chatbar-wrap">
+      <div class="chatbar" id="chatbar" onclick="fillPrompt()">
+        <span class="ph">Describe your routine…</span>
+      </div>
+      <button class="sendbtn" id="sendbtn" onclick="send()" aria-label="Send">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 14.5v-11M4.2 8.2L9 3.5l4.8 4.7" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+    </div>
+  </section>
+
+  <!-- ============ SCREEN 3 : EXCEPTION ============ -->
+  <section class="screen" id="s-exception">
+    <div class="topbar">
+      <button class="iconbtn" onclick="back('s-home')" aria-label="Back">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M10 3L5 8l5 5" stroke="#0A0A0A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+    </div>
+    <div class="eyebrow">Utilities autopay · Paused itself</div>
+    <h1>This bill looks off</h1>
+
+    <div class="exc-amount">
+      <div class="val">€118.40</div>
+      <div class="vs">Stadtwerke Energie · due Jul 9<br>Your 6-month average is <strong>€86.20</strong></div>
+      <div class="delta-pill">
+        <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M5 8.5v-7M1.8 4.5L5 1.5l3.2 3" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        37% above usual
+      </div>
+    </div>
+
+    <div class="chart">
+      <div class="chart-title">Stadtwerke Energie — last 6 bills</div>
+      <div class="bars">
+        <div class="bar-col"><span class="bar-val">84</span><div class="bar" style="height:52%"></div><span class="m">Feb</span></div>
+        <div class="bar-col"><span class="bar-val">88</span><div class="bar" style="height:55%"></div><span class="m">Mar</span></div>
+        <div class="bar-col"><span class="bar-val">82</span><div class="bar" style="height:51%"></div><span class="m">Apr</span></div>
+        <div class="bar-col"><span class="bar-val">90</span><div class="bar" style="height:56%"></div><span class="m">May</span></div>
+        <div class="bar-col"><span class="bar-val">87</span><div class="bar" style="height:54%"></div><span class="m">Jun</span></div>
+        <div class="bar-col"><span class="bar-val">118</span><div class="bar hot" style="height:78%"></div><span class="m">Jul</span></div>
+      </div>
+      <div class="avg-note">Your rule: hold anything more than 25% above the average.</div>
+    </div>
+
+    <div class="exc-why">Nothing was paid. The bill is on hold with the provider until you decide — no late fee applies before Jul 9.</div>
+
+    <div class="exc-actions">
+      <button class="btn" onclick="approveBill()">Pay €118.40 now</button>
+      <button class="btn ghost" onclick="toast('Bill declined. I\u2019ve drafted a message to Stadtwerke asking for an itemised breakdown.')">Don't pay — query it</button>
+      <button class="always-ask" onclick="toast('Done. I\u2019ll always ask before paying Stadtwerke Energie.')">Always ask for this provider</button>
+    </div>
+  </section>
+
+  <div class="scrim" id="scrim" onclick="closeSheet()"></div>
+  <div class="sheet" id="sheet" role="dialog" aria-modal="true">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title" id="shTitle"></div>
+    <div class="sheet-desc" id="shDesc"></div>
+    <div id="shRows"></div>
+    <button class="btn" id="shChange" onclick="expandOpts()">Change</button>
+  </div>
+
+  <div class="toast" id="toast">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6.5" stroke="#fff" stroke-width="1.4"/><path d="M8 5v3.4M8 10.8v.4" stroke="#fff" stroke-width="1.4" stroke-linecap="round"/></svg>
+    <span id="toastText"></span>
+  </div>
+
+</div>
+<div class="hint">Interactive prototype · tap through — Routines concept, Saim</div>
+</div>
+
+<script>
+/* ---------- navigation ---------- */
+let current='s-home';
+const stack=[];
+function show(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active','left'));
+  const el=document.getElementById(id);
+  el.classList.add('active');el.scrollTop=0;
+  current=id;
+}
+function go(id){
+  stack.push(current);
+  const from=document.getElementById(current);
+  from.classList.add('left');from.classList.remove('active');
+  const to=document.getElementById(id);
+  to.classList.add('active');to.scrollTop=0;
+  current=id;
+}
+function back(fallback){show(stack.pop()||fallback);}
+
+/* ---------- tabs ---------- */
+function setTab(name){
+  ['active','paused','history'].forEach(t=>{
+    document.getElementById('tab-'+t).classList.toggle('sel',t===name);
+    document.getElementById('pane-'+t).classList.toggle('sel',t===name);
+  });
+  if(name==='history')document.getElementById('histBadge').style.display='none';
+}
+
+/* ---------- toast ---------- */
+let toastTimer;
+function toast(msg){
+  const t=document.getElementById('toast');
+  document.getElementById('toastText').textContent=msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>t.classList.remove('show'),3200);
+}
+
+/* ---------- chat ---------- */
+const promptText="When my salary arrives, pay my credit card in full, send €2,000 to Frank and move 10% to savings.";
+const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+let typing=false, filled=false, done=false;
+
+const heroHTML=
+  '<div class="chat-hero" id="chatHero">'+
+  '<h1>What would you like me to do?</h1>'+
+  '<p class="sub">Tell me what should happen and when. I\u2019ll look through your accounts to set everything up, and if anything isn\u2019t clear, I\u2019ll ask before doing anything.</p>'+
+  '</div>';
+
+function openChat(){
+  go('s-chat');
+  filled=false;typing=false;done=false;
+  document.getElementById('chatbar').innerHTML='<span class="ph">Describe your routine…</span>';
+  document.getElementById('sendbtn').classList.remove('ready');
+  document.getElementById('chatScroll').innerHTML=heroHTML;
+}
+
+function fillPrompt(){
+  if(typing||filled||done)return;
+  const bar=document.getElementById('chatbar');
+  const send=document.getElementById('sendbtn');
+  if(reduced){
+    bar.textContent=promptText;
+    filled=true;send.classList.add('ready');return;
+  }
+  typing=true;
+  bar.innerHTML='<span class="caret"></span>';
+  let n=0;
+  const iv=setInterval(()=>{
+    n++;
+    bar.textContent=promptText.slice(0,n);
+    bar.insertAdjacentHTML('beforeend','<span class="caret"></span>');
+    if(n>=promptText.length){
+      clearInterval(iv);
+      bar.textContent=promptText;
+      typing=false;filled=true;
+      send.classList.add('ready');
+    }
+  },20);
+}
+
+function send(){
+  if(!filled)return;
+  filled=false;done=true;
+  const scroll=document.getElementById('chatScroll');
+  const bar=document.getElementById('chatbar');
+  document.getElementById('sendbtn').classList.remove('ready');
+  bar.innerHTML='<span class="ph">Describe your routine…</span>';
+
+  // hero disappears, chat starts
+  const hero=document.getElementById('chatHero');
+  if(hero)hero.remove();
+
+  scroll.insertAdjacentHTML('beforeend',
+    '<div class="chat-label right">You</div>'+
+    '<div class="bubble user">'+promptText+'</div>');
+  scroll.scrollTop=scroll.scrollHeight;
+
+  // ephemeral thinking indicator — cycles, then disappears
+  const steps=[
+    'Reading your account…',
+    'Found your salary — ACME GmbH, ≈ €4,120…',
+    'Building your routine…'
+  ];
+  scroll.insertAdjacentHTML('beforeend','<div class="thinking" id="think">'+steps[0]+'</div>');
+  scroll.scrollTop=scroll.scrollHeight;
+  let i=1;
+  const iv=setInterval(()=>{
+    const th=document.getElementById('think');
+    if(i<steps.length){
+      th.textContent=steps[i];
+      scroll.scrollTop=scroll.scrollHeight;
+      i++;
+    }else{
+      clearInterval(iv);
+      th.remove();
+      showSetup();
+    }
+  },reduced?250:1100);
+}
+
+/* ---------- in-chat setup block ---------- */
+function showSetup(){
+  const scroll=document.getElementById('chatScroll');
+  const html=
+  '<div class="setup" id="setupBlock">'+
+
+  '<div class="setup-bubble">'+
+    '<div class="tl">'+
+
+      '<div class="tl-row">'+
+        '<div class="tl-marker trig" aria-hidden="true"></div>'+
+        '<div class="tl-content">'+
+          '<div class="parse-tag">Trigger</div>'+
+          '<div class="parse-text">When <span class="tok" id="tok-source" onclick="openSheet(\'source\')">salary from ACME GmbH</span> arrives — usually <span class="tok" id="tok-date" onclick="openSheet(\'date\')">≈ the 28th</span>, about <span class="tok" id="tok-amt" onclick="openSheet(\'amt\')">€4,120</span></div>'+
+          '<div class="parse-note">Detected from your last 6 months of deposits.</div>'+
+        '</div>'+
+      '</div>'+
+
+      '<div class="tl-row">'+
+        '<div class="tl-marker">1</div>'+
+        '<div class="tl-content">'+
+          '<div class="parse-tag">First</div>'+
+          '<div class="parse-text">Pay your <span class="tok" id="tok-card" onclick="openSheet(\'card\')">credit card statement</span> in full</div>'+
+          '<div class="parse-hint" id="hint-card">Mastercard •••• 4471 · statement €1,036.20</div>'+
+        '</div>'+
+      '</div>'+
+
+      '<div class="tl-row">'+
+        '<div class="tl-marker">2</div>'+
+        '<div class="tl-content">'+
+          '<div class="parse-tag">Then</div>'+
+          '<div class="parse-text">Send €2,000 to <span class="tok" id="tok-frank" onclick="openSheet(\'frank\')">Frank Müller</span></div>'+
+          '<div class="parse-hint" id="hint-frank">DE44 •••• •••• 7301</div>'+
+        '</div>'+
+      '</div>'+
+
+      '<div class="tl-row">'+
+        '<div class="tl-marker">3</div>'+
+        '<div class="tl-content">'+
+          '<div class="parse-tag">Then</div>'+
+          '<div class="parse-text">Move <span class="tok" id="tok-pct" onclick="openSheet(\'pct\')">10% (≈ €412)</span> to <span class="tok" id="tok-pot" onclick="openSheet(\'pot\')">Savings pot</span></div>'+
+          '<div class="parse-hint" id="hint-pot">Savings pot · balance €3,180</div>'+
+        '</div>'+
+      '</div>'+
+
+    '</div>'+
+  '</div>'+
+
+  '<div class="autonomy">'+
+    '<div class="ex-label">Permissions</div>'+
+    '<div class="seg" id="seg">'+
+      '<button onclick="setAutonomy(0,this)" class="sel">Ask first</button>'+
+      '<button onclick="setAutonomy(1,this)">Automatic</button>'+
+    '</div>'+
+    '<div class="seg-hint" id="segHint">Each payday you\u2019ll get one summary to approve before anything moves.</div>'+
+  '</div>'+
+
+  '<div class="setup-actions">'+
+    '<button class="btn" onclick="activate()">Looks right — activate</button>'+
+  '</div>'+
+
+  '</div>';
+  scroll.insertAdjacentHTML('beforeend',html);
+  // scroll so the setup block starts at top of view
+  const block=document.getElementById('setupBlock');
+  scroll.scrollTop=block.offsetTop-72;
+}
+
+/* ---------- selection sheet ---------- */
+const sheetData={
+ source:{title:'Salary source',desc:'What counts as your salary arriving.',opts:[
+  {n:'ACME GmbH deposits',d:'6 matching deposits · ≈ €4,120 around the 28th',tok:'salary from ACME GmbH'},
+  {n:'Any deposit over €3,000',d:'Broader match — also catches a new employer',tok:'any deposit over €3,000'}]},
+ date:{title:'When it usually arrives',desc:'Used to anticipate the run — not a fixed schedule.',opts:[
+  {n:'Around the 28th',d:'Detected from your deposit history',tok:'≈ the 28th'},
+  {n:'Exactly on the 28th',d:'Runs on the 28th even if the salary is late',tok:'the 28th'}]},
+ amt:{title:'Expected amount',desc:'Deposits near this amount count as salary.',opts:[
+  {n:'≈ €4,120',d:'Anything above €3,800 counts — bonus months included',tok:'€4,120'},
+  {n:'Exact amount only',d:'Only deposits of exactly €4,120',tok:'exactly €4,120'}]},
+ card:{title:'Credit card',desc:'The statement that gets paid in full.',hint:'hint-card',opts:[
+  {n:'Mastercard •••• 4471',d:'Current statement €1,036.20',tok:'credit card statement',h:'Mastercard •••• 4471 · statement €1,036.20'},
+  {n:'Visa •••• 2210',d:'Current statement €89.10',tok:'Visa statement',h:'Visa •••• 2210 · statement €89.10'}]},
+ frank:{title:'Recipient',desc:'Who receives the €2,000.',hint:'hint-frank',opts:[
+  {n:'Frank Müller',d:'DE44 •••• •••• 7301 · in your contacts',tok:'Frank Müller',h:'DE44 •••• •••• 7301'},
+  {n:'Frank Weber',d:'DE89 •••• •••• 5548 · in your contacts',tok:'Frank Weber',h:'DE89 •••• •••• 5548'}]},
+ pct:{title:'Savings amount',desc:'How much moves once the other steps are done.',opts:[
+  {n:'10% of salary',d:'≈ €412 each payday',tok:'10% (≈ €412)'},
+  {n:'Fixed €400',d:'Same amount regardless of salary',tok:'€400'}]},
+ pot:{title:'Destination',desc:'Where the savings go.',hint:'hint-pot',opts:[
+  {n:'Savings pot',d:'Balance €3,180',tok:'Savings pot',h:'Savings pot · balance €3,180'},
+  {n:'Emergency fund',d:'Balance €1,240',tok:'Emergency fund',h:'Emergency fund · balance €1,240'}]}
+};
+const selIdx={source:0,date:0,amt:0,card:0,frank:0,pct:0,pot:0};
+let sheetKey=null, sheetExpanded=false;
+
+function renderRows(){
+  const data=sheetData[sheetKey];
+  const cur=selIdx[sheetKey];
+  document.getElementById('shRows').innerHTML=data.opts.map((o,i)=>{
+    const hidden=(!sheetExpanded&&i!==cur)?' style="display:none"':'';
+    const initials=o.n.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+    return '<button class="opt-row" '+hidden+' onclick="rowTap('+i+')">'+
+      '<span class="avatar'+(i===cur?'':' alt')+'">'+initials+'</span>'+
+      '<span><span class="opt-name">'+o.n+'</span><br><span class="opt-detail">'+o.d+'</span></span>'+
+      (sheetExpanded?'<span class="radio'+(i===cur?'':'')+'" style="'+(i===cur?'border-color:var(--ink);border-width:7px':'')+'"></span>':'')+
+    '</button>';
+  }).join('');
+}
+function openSheet(key){
+  sheetKey=key;sheetExpanded=false;
+  const data=sheetData[key];
+  document.getElementById('shTitle').textContent=data.title;
+  document.getElementById('shDesc').textContent=data.desc;
+  document.getElementById('shChange').style.display='block';
+  renderRows();
+  document.getElementById('scrim').classList.add('show');
+  document.getElementById('sheet').classList.add('show');
+}
+function expandOpts(){
+  sheetExpanded=true;
+  document.getElementById('shChange').style.display='none';
+  renderRows();
+}
+function rowTap(i){
+  if(!sheetExpanded){expandOpts();return;}
+  selIdx[sheetKey]=i;
+  const data=sheetData[sheetKey];
+  const opt=data.opts[i];
+  const tokEl=document.getElementById('tok-'+sheetKey);
+  if(tokEl)tokEl.textContent=opt.tok;
+  if(data.hint&&opt.h){
+    const hEl=document.getElementById(data.hint);
+    if(hEl)hEl.textContent=opt.h;
+  }
+  closeSheet();
+}
+function closeSheet(){
+  document.getElementById('scrim').classList.remove('show');
+  document.getElementById('sheet').classList.remove('show');
+}
+
+const hints=[
+ "Each payday you'll get one summary to approve before anything moves.",
+ "Runs on its own. Anything unusual still pauses and asks you first."
+];
+function setAutonomy(i,btn){
+  document.querySelectorAll('#seg button').forEach(b=>b.classList.remove('sel'));
+  btn.classList.add('sel');
+  document.getElementById('segHint').textContent=hints[i];
+}
+function activate(){
+  // disable the activate button, run a build sequence, then land home
+  const btn=document.querySelector('#setupBlock .setup-actions .btn');
+  if(btn){btn.disabled=true;btn.style.opacity='.4';btn.style.pointerEvents='none';}
+  const scroll=document.getElementById('chatScroll');
+  const steps=[
+    'Setting up your routine…',
+    'Connecting card payment, transfer and savings steps…',
+    'Watching for your next salary — around Jul 28.'
+  ];
+  scroll.insertAdjacentHTML('beforeend','<div class="thinking" id="buildThink">'+steps[0]+'</div>');
+  scroll.scrollTop=scroll.scrollHeight;
+  let i=1;
+  const iv=setInterval(()=>{
+    const th=document.getElementById('buildThink');
+    if(i<steps.length){
+      th.textContent=steps[i];
+      scroll.scrollTop=scroll.scrollHeight;
+      i++;
+    }else{
+      clearInterval(iv);
+      th.remove();
+      document.getElementById('activeEmpty').style.display='none';
+      document.getElementById('salaryCard').style.display='flex';
+      stack.length=0;
+      setTab('active');
+      show('s-home');
+      toast('Salary day is live. Next run: around Jul 28.');
+    }
+  },reduced?250:1100);
+}
+
+/* ---------- pause / resume ---------- */
+function moveToPaused(){
+  document.getElementById('salaryCard').style.display='none';
+  document.getElementById('activeEmpty').style.display='block';
+  document.getElementById('pausedEmpty').style.display='none';
+  document.getElementById('salaryCardPaused').style.display='flex';
+  setTab('paused');
+  toast('Salary day paused. Nothing will run until you switch it back on.');
+}
+function moveToActive(){
+  document.getElementById('salaryCardPaused').style.display='none';
+  document.getElementById('pausedEmpty').style.display='block';
+  document.getElementById('activeEmpty').style.display='none';
+  document.getElementById('salaryCard').style.display='flex';
+  setTab('active');
+  toast('Salary day is back on. Next run: around Jul 28.');
+}
+
+/* ---------- exception ---------- */
+function approveBill(){
+  document.getElementById('auditHeld').style.display='none';
+  document.getElementById('auditPaid').style.display='flex';
+  stack.length=0;
+  show('s-home');
+  setTab('history');
+  toast('Paid. Utilities autopay is back on watch.');
+}
+</script>
+</body>
+</html>
