@@ -4,8 +4,6 @@ A concept for agent-driven personal banking. Describe what should happen with yo
 
 **Live prototype:** https://saimalshafi.github.io/money-routines/
 
-Best experienced on a phone.
-
 ## The idea
 
 Standing orders are dumb: fixed amount, fixed date, no context. Money Routines explores what banking automation looks like when an agent can actually interpret intent and account data:
@@ -22,7 +20,3 @@ A scripted interactive prototype. Single HTML file, no framework, no build step,
 ## Try the flow
 
 New routine → tap the chat bar → send → tap any underlined assumption → Change it → Activate → check the History tab and open the held bill.
-
----
-
-Part of my [AI playground](https://saimalshafi.framer.website/ai-playground) · [Portfolio](https://saimalshafi.framer.website)
